@@ -7,6 +7,7 @@ import { Button } from "./ui/button";
 import StepsBar from "./StepsBar";
 import RateContainer from "./RateContainer";
 import { ComboBox } from "./ComboBox";
+import Amount from "./Amount";
 
 
 const isValidWalletAddress = (address: string) => {
@@ -37,6 +38,8 @@ const Exchange = () => {
     const [memo, setMemo] = useState("")
     const[isMemo, setIsMemo] = useState(false)
     const [amount, setAmount] = useState(1)
+    const [exchangeReceive, setExchangeReceive] = useState<number>(0)
+    const [exchangeSent, setExchangeSent] = useState<number>(0)
 
     const [sendCoinId, setSendCoinId] = useState("ETH");
     const [receiveCoinId, setReceiveCoinId] = useState("BTC");
@@ -97,69 +100,101 @@ const Exchange = () => {
 
   return (
     <>
-        <RateContainer
-          sendCoin={sendCoinId}
-          receiveCoin={receiveCoinId}
-          sendNetwork={sendNetwork}
-          receiveNetwork={receiveNetwork}
-          amount={amount}
-        />
-        <StepsBar 
-          steps={steps} 
-          currentStep={currentStep} 
-          receiveImageUrl={receiveImageUrl}
-          sendImageUrl={sendImageUrl}
-        />
-        <div className="mb-4 mx-auto flex flex-col md:justify-between gap-6 lg:flex-row md:mx-auto">
+      <RateContainer
+        sendCoin={sendCoinId}
+        receiveCoin={receiveCoinId}
+        sendNetwork={sendNetwork}
+        receiveNetwork={receiveNetwork}
+        amount={amount}
+      />
+      <StepsBar 
+        steps={steps} 
+        currentStep={currentStep} 
+        receiveImageUrl={receiveImageUrl}
+        sendImageUrl={sendImageUrl}
+      />
+      <div className="mb-4 mx-auto flex flex-col md:justify-between gap-6 lg:flex-row md:mx-auto">
+          <div className="w-full">
             <div className="coin-buttons w-full bg-secondary p-8 rounded-md">
-          <ComboBox 
-            type="Ethereum" 
-            title="YOU SEND" 
-            value={sendCoin} 
-            setValue={setSendCoin} 
-            
-            sendImageUrl={sendImageUrl} 
-            receiveImageUrl={receiveImageUrl} 
-            setSendImageUrl={setSendImageUrl}
-            setReceiveImageUrl={setReceiveImageUrl}
-            
-            sendNetwork={sendNetwork} 
-            setSendNetwork={setSendNetwork}
-            receiveNetwork={receiveNetwork}
-            setReceiveNetwork={setReceiveNetwork}
+              <ComboBox 
+                type="Ethereum" 
+                title="YOU SEND" 
+                value={sendCoin} 
+                setValue={setSendCoin} 
+                
+                sendImageUrl={sendImageUrl} 
+                receiveImageUrl={receiveImageUrl} 
+                setSendImageUrl={setSendImageUrl}
+                setReceiveImageUrl={setReceiveImageUrl}
+                
+                sendNetwork={sendNetwork} 
+                setSendNetwork={setSendNetwork}
+                receiveNetwork={receiveNetwork}
+                setReceiveNetwork={setReceiveNetwork}
 
-            sendCoinId={sendCoinId}
-            receiveCoinId={receiveCoinId}
-            setSendCoinId={setSendCoinId}
-            setReceiveCoinId={setReceiveCoinId}
-          />
-        </div>
+                sendCoinId={sendCoinId}
+                receiveCoinId={receiveCoinId}
+                setSendCoinId={setSendCoinId}
+                setReceiveCoinId={setReceiveCoinId}
+              />
+            </div>
+            <Amount 
+              type="send" 
+              sendCoin={sendCoin} 
+              receiveCoin={receiveCoin} 
+              exchangeReceive={exchangeReceive} 
+              exchangeSent={exchangeSent} 
+              setExchangeReceive={setExchangeReceive}
+              setExchangeSent={setExchangeSent}
 
-        <RepeatIcon toggleCoins={toggleCoins} />
+              sendCoinId={sendCoinId}
+              receiveCoinId={receiveCoinId}
+              sendNetwork={sendNetwork}
+              receiveNetwork={receiveNetwork}
+            />
+          </div>
 
-        <div className="coin-buttons w-full bg-secondary p-8 rounded-md">
-          <ComboBox 
-            type="Bitcoin" 
-            title="YOU RECEIVE" 
-            value={receiveCoin} 
-            setValue={setReceiveCoin} 
+          <RepeatIcon toggleCoins={toggleCoins} />
+          <div className="w-full">
+            <div className="coin-buttons w-full bg-secondary p-8 rounded-md">
+              <ComboBox 
+                type="Bitcoin" 
+                title="YOU RECEIVE" 
+                value={receiveCoin} 
+                setValue={setReceiveCoin} 
 
-            sendImageUrl={sendImageUrl} 
-            receiveImageUrl={receiveImageUrl} 
-            setSendImageUrl={setSendImageUrl}
-            setReceiveImageUrl={setReceiveImageUrl}
+                sendImageUrl={sendImageUrl} 
+                receiveImageUrl={receiveImageUrl} 
+                setSendImageUrl={setSendImageUrl}
+                setReceiveImageUrl={setReceiveImageUrl}
 
-            sendNetwork={sendNetwork} 
-            setSendNetwork={setSendNetwork}
-            receiveNetwork={receiveNetwork}
-            setReceiveNetwork={setReceiveNetwork}
+                sendNetwork={sendNetwork} 
+                setSendNetwork={setSendNetwork}
+                receiveNetwork={receiveNetwork}
+                setReceiveNetwork={setReceiveNetwork}
 
-            sendCoinId={sendCoinId}
-            receiveCoinId={receiveCoinId}
-            setSendCoinId={setSendCoinId}
-            setReceiveCoinId={setReceiveCoinId}
-          />
-        </div>
+                sendCoinId={sendCoinId}
+                receiveCoinId={receiveCoinId}
+                setSendCoinId={setSendCoinId}
+                setReceiveCoinId={setReceiveCoinId}
+              />
+            </div>
+            <Amount 
+              type="receive" 
+              sendCoin={sendCoin} 
+              receiveCoin={receiveCoin} 
+              exchangeReceive={exchangeReceive} 
+              exchangeSent={exchangeSent} 
+              setExchangeReceive={setExchangeReceive}
+              setExchangeSent={setExchangeSent} 
+
+              sendCoinId={sendCoinId}
+              receiveCoinId={receiveCoinId}
+              sendNetwork={sendNetwork}
+              receiveNetwork={receiveNetwork}
+            />
+
+          </div>
       </div>
 
       <div className="mx-auto relative">

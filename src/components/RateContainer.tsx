@@ -1,5 +1,4 @@
-import React from "react";
-import Query from "./Query";
+import React, { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 
 interface RateContainerProps {
@@ -7,7 +6,7 @@ interface RateContainerProps {
   sendNetwork: string;
   receiveCoin: string;
   receiveNetwork: string;
-  amount: number
+  amount: number;
 }
 
 const RateContainer = ({
@@ -17,29 +16,62 @@ const RateContainer = ({
   sendNetwork,
   amount
 }: RateContainerProps) => {
+  const [rateData, setRateData] = useState<{
+    depositCoin: string;
+    rate: string;
+    settleCoin: string;
+  } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+  const [error, setError] = useState()
 
-  const url = `https://sideshift.ai/api/v2/pair/${sendCoin}-${sendNetwork}/${receiveCoin}-${receiveNetwork}?amount=${amount}`
+  useEffect(
+    () => {
+      const fetchRate = async () => {
+        setIsLoading(true);
+        setIsError(false);
 
-  const queryParams = ["coinrates"];
-  const { isPending, isError, data, error } = Query({ url, queryParams });
+        const url = `https://sideshift.ai/api/v2/pair/${sendCoin}-${sendNetwork}/${receiveCoin}-${receiveNetwork}?amount=${amount}`;
 
-    if (isPending) {
-        return <Loader2 />
-    }
+        try {
+          const response = await fetch(url);
+          if (!response.ok) {
+            throw new Error("Failed to fetch rate data");
+          }
 
-    if (isError) {
-        console.log(error);
-        return <>
-            <h3>Error loading rates</h3>
-        </>
-    }
+          const data = await response.json();
+          setRateData(data);
+        } catch (error) {
+          console.error("Error fetching rate data:", error);
+          setIsError(true);
+        } finally {
+          setIsLoading(false);
+        }
+      };
 
+      fetchRate();
+    },
+    [sendCoin, sendNetwork, receiveCoin, receiveNetwork, amount]
+  ); 
 
+  if (isLoading) {
+    return <Loader2 />;
+  }
+
+  if (isError || !rateData) {
+    return (
+      <div>
+        <h3>Error loading rates</h3>
+      </div>
+    );
+  }
   return (
     <div>
-        <h3 className="font-bold text-color">{amount} {data.depositCoin} = {data.rate} {data.settleCoin}</h3>
+      <h3 className="font-bold text-color">
+        {amount} {rateData.depositCoin} = {rateData.rate} {rateData.settleCoin}
+      </h3>
     </div>
-  )
+  );
 };
 
 export default RateContainer;

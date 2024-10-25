@@ -125,7 +125,7 @@ export const groupCoinsByNetwork = async (
           if (!existingCoin) {
             // Insert the new coin entry if it doesn't already exist
             const result = await cryptoCollection.insertOne(newCoinEntry);
-            console.log("Inserted:", result);
+            // console.log("Inserted:", result);
           } else {
             console.log(`Coin ${newCoinEntry.coin} on ${newCoinEntry.network} already exists.`);
           }

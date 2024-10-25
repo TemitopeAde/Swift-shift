@@ -77,7 +77,7 @@ export const fetchAllCrypto = async (): Promise<Cryptocurrency[]> => {
     settleOffline: coin.settleOffline
   }));
 
-  console.log(transformedCoins);
+  // console.log(transformedCoins);
 
   return transformedCoins;
 };
@@ -117,7 +117,7 @@ export const groupCoinsByNetwork = async (
     }
 
     const iconUrl = await fetchIconUrl(coinSymbol);
-    console.log(iconUrl);
+    // console.log(iconUrl);
 
     networks.forEach(async network => {
       if (!tokenDetails[network]) {
@@ -146,13 +146,13 @@ export const groupCoinsByNetwork = async (
         });
 
         try {
-          console.log(transformedArray);
+          // console.log(transformedArray);
           const { db } = await connectToDatabase();
           const cryptoCollection = db.collection("crytoList");
-          console.log(cryptoCollection, "response");
+          // console.log(cryptoCollection, "response");
 
           const result = await cryptoCollection.insertOne(transformedArray);
-          console.log(result, "saved res");
+          // console.log(result, "saved res");
         } catch (error) {
           console.error(`Error saving to MongoDB: ${error}`);
         }

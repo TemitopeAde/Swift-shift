@@ -26,17 +26,16 @@ export const Query = ({url, queryParams}: fetchProps) => {
 
       if (!response.ok) {
         throw new Error("Error fetching data")
+        // throw new Error(error?.message)
       }
 
       return response.json()
     }
   });
 
-  if (data) {
-    console.log(data);
-  }
+  console.log(`Item is pending: ${isPending}`);
   
-  
+
   return {
     isPending,
     isError,

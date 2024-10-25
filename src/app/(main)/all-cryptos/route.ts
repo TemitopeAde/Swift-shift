@@ -24,11 +24,11 @@ const getAllCrytos = async () : Promise<Cryptocurrency[]> => {
     try {
       const { db } = await connectToDatabase();
       const cryptoCollection = db.collection("crytoList");
-      console.log(cryptoCollection);
+    
       
   
       const allItems = await cryptoCollection.find({}).toArray()
-    //   console.log(allItems);
+    
       
       const transformedItems = (allItems).map(item => ({
         id: item._id.toString(),

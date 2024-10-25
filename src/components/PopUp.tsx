@@ -103,7 +103,6 @@ const PopUp = ({
     if (data) {
         return (
             <>
-                
                 <Popover open={open} onOpenChange={setOpen}>
                     <PopoverTrigger className="bg-gray-800">
                     <div className="flex justify-between gap-x-6 rounded-sm shadow-sm">
