@@ -1,12 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 
+
+interface RateData {
+  depositCoin: string;
+  rate: string;
+  settleCoin: string;
+  min: number;
+  max: number;
+}
+
+
 interface RateContainerProps {
   sendCoin: string;
   sendNetwork: string;
   receiveCoin: string;
   receiveNetwork: string;
   amount: number;
+  rateData: RateData | null,
+  setRateData: React.Dispatch<React.SetStateAction<RateData | null>>;
 }
 
 const RateContainer = ({
@@ -14,16 +26,14 @@ const RateContainer = ({
   receiveNetwork,
   sendCoin,
   sendNetwork,
-  amount
+  amount,
+  rateData,
+  setRateData,
 }: RateContainerProps) => {
-  const [rateData, setRateData] = useState<{
-    depositCoin: string;
-    rate: string;
-    settleCoin: string;
-  } | null>(null);
+  
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
-  const [error, setError] = useState()
+  // const [max, setMax] = useState(0);
 
   useEffect(
     () => {
@@ -31,7 +41,7 @@ const RateContainer = ({
         setIsLoading(true);
         setIsError(false);
 
-        const url = `https://sideshift.ai/api/v2/pair/${sendCoin}-${sendNetwork}/${receiveCoin}-${receiveNetwork}?amount=${amount}`;
+        const url = `https://sideshift.ai/api/v2/pair/${sendCoin}-${sendNetwork}/${receiveCoin}-${receiveNetwork}`;
 
         try {
           const response = await fetch(url);
@@ -40,7 +50,13 @@ const RateContainer = ({
           }
 
           const data = await response.json();
-          setRateData(data);
+          setRateData({
+            depositCoin: data.depositCoin,
+            rate: data.rate,
+            settleCoin: data.settleCoin,
+            min: data.min,
+            max: data.max,
+          });
         } catch (error) {
           console.error("Error fetching rate data:", error);
           setIsError(true);
