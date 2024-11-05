@@ -83,6 +83,13 @@ const Amount: React.FC<AmountProps> = ({
         const minValue = parseFloat(rateData?.min?.toString() || "0");
         
         console.log(parsedValue, maxValue);
+
+        if (value === "0" || parsedValue===0) {
+            setShiftMessage("Amount can't be 0")
+            setActive(true)
+        }   else {
+            setActive(false)
+        }
         
         if (parsedValue > maxValue) {
             console.log("Above max");

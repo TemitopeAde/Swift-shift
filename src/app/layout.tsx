@@ -3,6 +3,7 @@ import "./globals.css";
 import { titilium } from "@/lib/font";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import ReactQueryProviders from "@/lib/QueryClient";
+import Template from "./template";
 
 export const metadata: Metadata = {
   title: "Swift Shift",
@@ -26,7 +27,11 @@ export default function RootLayout({
             disableTransitionOnChange
           >
               <ReactQueryProviders>
-                {children}
+                  <Template>
+                  {children}
+                  </Template>
+                  
+                
               </ReactQueryProviders>
           </ThemeProvider> 
           

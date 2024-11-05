@@ -71,6 +71,16 @@ const config: Config = {
 		textTransform: {
 			'sentence': 'lowercase',
 		},
+		keyframes: {
+			dots: {
+			  '0%, 100%': { content: '""' },
+			  '33%': { content: '"."' },
+			  '66%': { content: '".."' },
+			},
+		},
+		animation: {
+			dots: 'dots 1.5s steps(3, end) infinite',
+		},
   	}
   },
   plugins: [require("tailwindcss-animate"), function ({ addUtilities }) {

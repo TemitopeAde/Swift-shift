@@ -12,7 +12,7 @@
   :root {
     --background: 240 10% 98%; /* Light background */
     --foreground: 240 10% 20%; /* Dark text */
-    --card: 0 10% 95%; /* Card background */
+    --card: #F8F8FF; /* Card background */
     --card-foreground: 240 10% 20%; /* Card text */
     --popover: 240 10% 95%;
     --popover-foreground: 240 10% 20%;
@@ -106,4 +106,25 @@ input[type='number']::-webkit-outer-spin-button {
 /* Hide the number input spinners in Firefox */
 input[type='number'] {
     -moz-appearance: textfield; /* Removes arrows in Firefox */
+}
+
+
+@keyframes dots {
+  0% {
+    content: "";
+  }
+  33% {
+    content: ".";
+  }
+  66% {
+    content: "..";
+  }
+  100% {
+    content: "...";
+  }
+}
+
+.animate-dots::after {
+  content: "";
+  animation: dots 1.5s steps(3, end) infinite;
 }
