@@ -5,7 +5,7 @@ import Exchange from "./Exchange";
 import { useState } from "react";
 
 export function ExchangeTabs() {
-  const [state, setState] = useState(0);
+  // const [state, setState] = useState(0);
   const [activeTab, setActiveTab] = useState("fixed");
   const activeTabStyle = "text-white";
   const inactiveTabStyle = "text-white";

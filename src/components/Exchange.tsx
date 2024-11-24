@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import QRCode from "react-qr-code";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,8 +13,15 @@ import RateContainer from "./RateContainer";
 import { ComboBox } from "./ComboBox";
 import Amount from "./Amount";
 import { Loader2 } from "lucide-react";
-
 import Link from "next/link";
+
+interface FormObject {
+  coinSent: string;
+  coinNetworkSent: string;
+  coinReceived: string;
+  coinNetworkReceived: string;
+  amount: number;
+}
 
 
 interface ShiftData {
@@ -52,6 +60,7 @@ const RepeatIcon = ({ toggleCoins }: { toggleCoins: () => void }) => {
 };
 
 const Exchange = () => {
+    const router = useRouter()
     const [sendCoin, setSendCoin] = useState("Ethereum");
     const [receiveCoin, setReceiveCoin] = useState("Bitcoin");
   
@@ -63,16 +72,16 @@ const Exchange = () => {
 
     const [error, setError] = useState("");
     const [walletAddress, setWalletAddress] = useState("");
-    const [memo, setMemo] = useState("")
-    const[isMemo, setIsMemo] = useState(false)
-    const [amount, setAmount] = useState(1)
+    const [memo] = useState("")
+    const[isMemo] = useState(false)
+    const [amount] = useState(1)
     const [exchangeReceive, setExchangeReceive] = useState<number>(0)
     const [exchangeSent, setExchangeSent] = useState<number>(0)
     const [refundWallet, setRefundWallet] = useState<string>("")
 
     const [sendCoinId, setSendCoinId] = useState("ETH");
     const [receiveCoinId, setReceiveCoinId] = useState("BTC");
-    const [state, setState] = useState(1);
+    const [state, setState] = useState(3);
     const [amountSent, setAmountSent] = useState(1)
     const [errorRefund, setErrorRefund] = useState<string>("")
 
@@ -88,17 +97,64 @@ const Exchange = () => {
     const [shiftData, setShiftData] = useState<ShiftData>({});
     const [loading, setLoading] = useState<boolean>(false);
 
-    const wallet = "3MdzV7aouLy4NeQvKGFvs7RSqEbm8hc7BF"; 
     const [copySuccess, setCopySuccess] = useState(false);
+    
 
     const toggleCoins = () => {
-        setSendCoin((prevSendCoin) => receiveCoin); 
-        setReceiveCoin((prevReceiveCoin) => sendCoin);
+        setSendCoin(() => receiveCoin); 
+        setReceiveCoin(() => sendCoin);
     
-        setSendImageUrl((prev) => receiveImageUrl);
-        setReceiveImageUrl((prev) =>sendImageUrl);
+        setSendImageUrl(() => receiveImageUrl);
+        setReceiveImageUrl(() =>sendImageUrl);
     };
-  
+    
+    const handleShift = async () => { 
+      const myHeaders = new Headers();
+      myHeaders.append("x-sideshift-secret", "d4bff73542b9b1a5b5aee7687f219736"); 
+      myHeaders.append("x-user-ip", "1.2.3.4");
+      myHeaders.append("Content-Type", "application/json");
+    
+      const requestOptions = {
+        method: "GET",
+        headers: myHeaders,
+      };
+      console.log(shiftData?.id, "id");
+      
+      const shiftId = shiftData?.id
+      try {
+        const data = await fetch(`https://sideshift.ai/api/v2/shifts/${shiftId}`, requestOptions);
+        if (!data.ok) {
+          console.error("Failed", data.statusText);
+        }
+        const response = await data.json()  
+        console.log(response);
+
+        if (response?.status === "settled") {
+          setState(3)
+        }
+        
+        return response;
+      } catch (error) {
+        console.error("Error during the fetch request:", error);
+      }
+    } 
+
+    const handleShiftAgain = () => {
+      setState(1)
+      setShiftData({})
+    }
+
+    const handleHome = () => {
+      router.push("/")
+      setState(1)
+    }
+
+    setTimeout(() => {
+      if (state ===2) {
+        handleShift()
+      }
+    }, 5000);
+    
 
     const handleSubmit = async () => {
         setLoading(true)
@@ -129,8 +185,7 @@ const Exchange = () => {
         }
     }
     
-
-    const sendRequest = async (formObject: any) => { 
+    const sendRequest = async (formObject: FormObject) => { 
       const myHeaders = new Headers();
       myHeaders.append("x-sideshift-secret", "d4bff73542b9b1a5b5aee7687f219736"); 
       myHeaders.append("x-user-ip", "1.2.3.4");
@@ -162,7 +217,6 @@ const Exchange = () => {
         
         if (response.id) {
           await fixedShift(response.id)
-    
         }
         return data;
       } catch (error) {
@@ -250,13 +304,17 @@ const Exchange = () => {
 
     const copyToClipboard = async () => {
       try {
-        await navigator.clipboard.writeText(wallet);
+        await navigator.clipboard.writeText(shiftData?.depositAddress || "");
         setCopySuccess(true);
         setTimeout(() => setCopySuccess(false), 2000);
       } catch (err) {
         console.error("Failed to copy: ", err);
       }
     };
+
+    function maskAddress(address: string): string {
+      return `${address.slice(0, 6)}...${address.slice(-4)}`;
+    }
     
     const currentStep = 0;
     const steps = [
@@ -505,7 +563,7 @@ const Exchange = () => {
 
                   <div className="flex flex-col gap-y-3">
                     <h3 className="font-normal uppercase">To the {shiftData?.depositCoin} address</h3>
-                    <h3 className="font-bold">{shiftData?.depositAddress}</h3>
+                    <h3 className="font-bold">{maskAddress(shiftData?.depositAddress ?? "")}</h3>
                     <Button onClick={copyToClipboard} className="uppercase font-bold w-full">
                       {copySuccess ? "Address Copied!" : "Copy Address"}
                     </Button>
@@ -533,17 +591,17 @@ const Exchange = () => {
 
                     <div className="flex gap-x-2">
                       <h3 className="font-normal uppercase">Receiving address:</h3>
-                      <h3 className="font-bold">{shiftData?.settleAddress}</h3>
+                      <h3 className="font-bold">{maskAddress(shiftData?.settleAddress ?? "")}</h3>
                     </div>
 
                     <div className="flex gap-x-2">
                       <h3 className="font-normal uppercase">Deposit address:</h3>
-                      <h3 className="font-bold">{shiftData?.depositAddress}</h3>
+                      <h3 className="font-bold">{maskAddress(shiftData?.depositAddress ?? "")}</h3>
                     </div>
 
                     <div className="flex gap-x-2">
                       <h3 className="font-normal uppercase">Refund address:</h3>
-                      <h3 className="font-bold">{shiftData?.refundAddress}</h3>
+                      <h3 className="font-bold">{maskAddress(shiftData?.refundAddress ?? "")}</h3>
                     </div>
 
                     <div className="flex gap-x-2">
@@ -563,6 +621,7 @@ const Exchange = () => {
                     <div className="flex gap-x-2">
                       <h3 className="font-normal uppercase">Status:</h3>
                       <h3 className="font-bold sentence-case">{shiftData?.status}</h3>
+                      <span className="animate-dots"></span>
                     </div>
                     <div className="flex gap-x-2">
                       <h3 className="font-normal uppercase">Average shift time:</h3>
@@ -604,9 +663,16 @@ const Exchange = () => {
 
     if (state===3) {
       return (
-        <div>
-          THREE
-        </div>
+        <section className="bg-card rounded-sm shadow-md p-6 flex flex-col gap-y-6">
+          <div>
+            <h1 className="font-bold text-2xl md:text-3xl">Transaction successful !!!</h1>
+          </div>
+
+          <div className="flex gap-x-4">
+            <Button onClick={handleShiftAgain} className="bg-primary text-muted font-bold">Shift again</Button>
+            <Button onClick={handleHome} className="bg-primary text-muted font-bold">Home</Button>
+          </div>
+        </section>
       )
     }
 
